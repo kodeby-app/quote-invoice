@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quote &amp; Invoice</title>
+  <meta name="description" content="Make professional quotes and invoices in your browser. Free, no sign-up, and nothing leaves your device.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand">
+      <img src="favicon.svg" alt="" width="28" height="28">
+      <div>
+        <strong data-i18n="appName">Quote &amp; Invoice</strong>
+        <span class="tagline" data-i18n="tagline">Free. No sign-up. Nothing leaves your browser.</span>
+      </div>
+    </div>
+    <nav class="actions">
+      <div class="segmented" role="group" aria-label="Document type">
+        <button type="button" data-type="quote" data-i18n="quote">Quote</button>
+        <button type="button" data-type="invoice" data-i18n="invoice">Invoice</button>
+      </div>
+      <button type="button" id="btn-new" data-i18n="new">New</button>
+      <button type="button" id="btn-saved" data-i18n="saved">My documents</button>
+      <button type="button" id="btn-convert" data-i18n="toInvoice">Turn into invoice</button>
+      <button type="button" id="btn-print" class="primary" data-i18n="download">Download PDF</button>
+      <select id="lang" aria-label="Language">
+        <option value="en">English</option>
+        <option value="nb">Norsk</option>
+      </select>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <form id="editor" class="editor no-print" autocomplete="off" novalidate>
+      <section class="card">
+        <h2 data-i18n="document">Document</h2>
+        <div class="grid">
+          <label><span data-i18n="number">Number</span><input data-bind="doc.number"></label>
+          <label><span data-i18n="status">Status</span>
+            <select data-bind="doc.status">
+              <option value="draft" data-i18n="st_draft">Draft</option>
+              <option value="sent" data-i18n="st_sent">Sent</option>
+              <option value="accepted" data-i18n="st_accepted">Accepted</option>
+              <option value="paid" data-i18n="st_paid">Paid</option>
+            </select>
+          </label>
+          <label><span data-i18n="issueDate">Date</span><input type="date" data-bind="doc.issueDate"></label>
+          <label><span data-label="dueDate">Due date</span><input type="date" data-bind="doc.dueDate"></label>
+          <label><span data-i18n="currency">Currency</span>
+            <select data-bind="doc.currency">
+              <option>NOK</option><option>SEK</option><option>DKK</option><option>EUR</option>
+              <option>USD</option><option>GBP</option><option>CHF</option><option>PLN</option>
+              <option>CAD</option><option>AUD</option>
+            </select>
+          </label>
+          <label><span data-i18n="reference">Your reference</span><input data-bind="doc.reference" data-i18n-ph="referencePh"></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="client">Client</h2>
+        <div class="grid">
+          <label><span data-i18n="clientName">Name or company</span><input data-bind="doc.client.name"></label>
+          <label><span data-i18n="contact">Contact person</span><input data-bind="doc.client.contact"></label>
+          <label class="wide"><span data-i18n="address">Address</span><textarea rows="2" data-bind="doc.client.address"></textarea></label>
+          <label><span data-i18n="email">Email</span><input type="email" data-bind="doc.client.email"></label>
+          <label><span data-i18n="orgNo">Org. number</span><input data-bind="doc.client.orgNo"></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="items">Items</h2>
+        <div class="items-head" aria-hidden="true">
+          <span data-i18n="description">Description</span>
+          <span data-i18n="qty">Qty</span>
+          <span data-i18n="unit">Unit</span>
+          <span data-i18n="price">Unit price</span>
+          <span data-i18n="vat">VAT %</span>
+          <span class="right" data-i18n="amount">Amount</span>
+          <span></span>
+        </div>
+        <div id="items"></div>
+        <button type="button" id="btn-add-item" class="ghost" data-i18n="addItem">+ Add line</button>
+        <datalist id="vat-rates"><option value="25"><option value="15"><option value="12"><option value="0"></datalist>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="notesTitle">Notes and terms</h2>
+        <label class="wide"><span data-i18n="notes">Note to the client</span><textarea rows="3" data-bind="doc.notes" data-i18n-ph="notesPh"></textarea></label>
+      </section>
+
+      <section class="card">
+        <h2><span data-i18n="you">Your business</span> <small data-i18n="youHint">Saved for all your documents</small></h2>
+        <div class="grid">
+          <label><span data-i18n="bizName">Business name</span><input data-bind="profile.name"></label>
+          <label><span data-i18n="orgNo">Org. number</span><input data-bind="profile.orgNo"></label>
+          <label class="wide"><span data-i18n="address">Address</span><textarea rows="2" data-bind="profile.address"></textarea></label>
+          <label><span data-i18n="email">Email</span><input type="email" data-bind="profile.email"></label>
+          <label><span data-i18n="phone">Phone</span><input data-bind="profile.phone"></label>
+          <label><span data-i18n="website">Website</span><input data-bind="profile.website"></label>
+          <label><span data-i18n="bank">Bank account</span><input data-bind="profile.bankAccount"></label>
+          <label><span>IBAN</span><input data-bind="profile.iban"></label>
+          <label><span>BIC / SWIFT</span><input data-bind="profile.bic"></label>
+          <label><span data-i18n="terms">Payment terms (days)</span><input type="number" min="0" step="1" data-bind="profile.paymentDays"></label>
+          <label class="check wide"><input type="checkbox" data-bind="profile.vatRegistered"> <span data-i18n="vatReg">Registered for VAT</span></label>
+          <div class="wide logo-row">
+            <span data-i18n="logo">Logo</span>
+            <input type="file" id="logo-file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+            <button type="button" id="btn-logo-remove" class="ghost" data-i18n="removeLogo">Remove logo</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card muted">
+        <h2 data-i18n="backup">Backup</h2>
+        <p data-i18n="backupText">Your documents are stored only in this browser. Download a backup now and then, or to move your documents to another device.</p>
+        <div class="row">
+          <button type="button" id="btn-export" class="ghost" data-i18n="export">Download backup</button>
+          <label class="ghost button"><span data-i18n="import">Restore backup</span><input type="file" id="import-file" accept="application/json,.json" hidden></label>
+        </div>
+      </section>
+    </form>
+
+    <div class="preview-wrap">
+      <article id="paper" class="paper" aria-label="Preview"></article>
+    </div>
+  </main>
+
+  <footer class="site-footer no-print">
+    <span data-i18n="privacy">Everything you type stays in this browser. There is no server, no account and no tracking.</span>
+    <span>· <span data-i18n="madeBy">An example app by the Kodeby team.</span> <a href="https://kodeby.app" rel="noopener">kodeby.app</a></span>
+  </footer>
+
+  <dialog id="saved-dialog">
+    <div class="dialog-head">
+      <h2 data-i18n="saved">My documents</h2>
+      <button type="button" class="ghost" data-close data-i18n="close">Close</button>
+    </div>
+    <div id="saved-list"></div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
